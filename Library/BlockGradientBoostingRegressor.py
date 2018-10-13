@@ -43,10 +43,15 @@ class BlockGradientBoostingRegressor:
         y = np.array([])
         for i in range(len(Xs)):
             Xc = Xs[i]
-            yc = ys[i]
-            Xn,yn = self.getTreeTargetsPerBlock(Xc, yc)
-            X = np.stack([X,Xn],axis=0)
-            y = np.stack([y,yn],axis=0)
+            if Xc.shape[0] > 0:
+                yc = ys[i]
+                Xn,yn = self.getTreeTargetsPerBlock(Xc, yc)
+                if X.shape[0] == 0:
+                    X = Xn
+                    y = yn
+                else:
+                    X = np.vstack([X,Xn])
+                    y = np.concatenate((y,yn))
         return X,y
 
 
@@ -61,7 +66,7 @@ class BlockGradientBoostingRegressor:
 
         for i in range(self.n_trees):
             X,y = self.getTreeTargets(Xs, ys)
-            newTree = DecisionTreeRegressor(self.treeArgs)
+            newTree = DecisionTreeRegressor(**self.treeArgs)
             newTree.fit(X, y)
             self.trees.append(newTree)
             if self.search_gamma:

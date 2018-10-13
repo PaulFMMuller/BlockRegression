@@ -22,8 +22,11 @@ class BlockLinearRegressor:
     The sum of each "real" target variable of the elements of Xs[i] is equal to ys[i].
     '''
     def fit(self, Xs, ys):
-        M = np.zeros((Xs[0].shape[1], Xs[0].shape[1]))
-        N = np.zeros(Xs[0].shape[1])
+        interceptTerm = 0
+        if self.fit_intercept:
+            interceptTerm  = 1    
+        M = np.zeros((Xs[0].shape[1]+interceptTerm, Xs[0].shape[1]+interceptTerm))
+        N = np.zeros((Xs[0].shape[1]+interceptTerm,1))
         for i in range(len(Xs)):
             Xc = Xs[i]
             yc = ys[i]
